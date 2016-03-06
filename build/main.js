@@ -35,3 +35,20 @@ for (var _i = 0; _i < data.length; _i += 3) {
   ctx.ellipse(x, y, r, r, 0, 0, Math.PI * 2);
 }
 ctx.fill();
+
+var image = ctx.getImageData(0, 0, size, size);
+
+var correct = 0;
+for (var _i2 = 0; _i2 < image.data.length; _i2 += 4) {
+  image.data[_i2];
+
+  if (
+  // white, good
+  image.data[_i2 + 3] == 0 ||
+  // red + blue, good
+  image.data[_i2] && image.data[_i2 + 2]) {
+    correct++;
+  }
+}
+
+console.log(correct / image.data.length);

@@ -35,3 +35,22 @@ for (let i = 0; i < data.length; i += 3){
   ctx.ellipse(x, y, r, r, 0, 0, Math.PI*2);
 }
 ctx.fill()
+
+let image = ctx.getImageData(0, 0, size, size)
+
+let correct = 0
+for (let i = 0; i < image.data.length; i+=4) {
+  image.data[i]
+
+  if(
+    // white, good
+    image.data[i + 3] == 0 ||
+    // red + blue, good
+    (image.data[i] && image.data[i + 2])
+  ) {
+    correct++
+  }
+
+}
+
+console.log(correct/image.data.length)
