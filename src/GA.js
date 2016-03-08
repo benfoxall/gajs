@@ -16,7 +16,7 @@ export default class GA {
       this.population.shift()
     }
 
-    if(Math.random() > 0.1) {
+    if(Math.random() > 0.98) {
       this.mutate(entity)
     }
 
@@ -46,23 +46,19 @@ export default class GA {
 
 }
 
-
-
-
-
-class T extends GA {
-
-  _rnd() {
-    return Math.floor(Math.random()*21)
+export class GAUint8 extends GA {
+  constructor(size) {
+    super()
+    this.size = size
   }
 
   generate() {
-    return new Uint8Array(21).fill(0)
-        .map( () => Math.random() * 255 )
+    return new Uint8Array(this.size)
+      .fill(0).map( () => Math.random() * 255 )
   }
 
   cross(mother, father) {
-    const len = mother.length
+    const len = this.size
 
     // 2 point cross
     let a = this._rnd()
@@ -79,13 +75,24 @@ class T extends GA {
   mutate(entity) {
     const at = this._rnd()
     entity[at] ^= (1 << Math.random() * 8)
-    // entity[at] = 254
   }
 
-  assess (entity) {
-    return entity.reduce((a, b) => a + b, 0) / (254 * 21)
+  _rnd() {
+    return Math.floor(Math.random()*this.size)
+  }
+
+}
+
+class T extends GAUint8 {
+  constructor() {
+    super(21)
+  }
+
+  assess(entity) {
+    return entity.reduce((a, b) => a + b, 0) / (254 * 100)
   }
 }
+
 
 const test = new T()
 
