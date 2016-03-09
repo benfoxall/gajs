@@ -78,4 +78,10 @@ const inter = setInterval(ct.tick.bind(ct), 1)
 setTimeout(() => {
   clearInterval(inter)
   console.log(count)
-}, 15000)
+
+  setTimeout(render, 1000, ct.worstE().entity)
+  setTimeout(render, 2000, ct.bestE().entity)
+  setTimeout(render, 3000, ct.worstE().entity)
+  setTimeout(render, 4000, ct.bestE().entity)
+
+}, 10000)

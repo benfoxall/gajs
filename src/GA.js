@@ -49,6 +49,15 @@ export default class GA {
     return this.population.filter( x => x.fitness == m)[0]
   }
 
+  worst() {
+    return Math.min.apply(Math, this.population.map( x => x.fitness))
+  }
+
+  worstE() {
+    const m = this.worst()
+    return this.population.filter( x => x.fitness == m)[0]
+  }
+
 }
 
 export class GAUint8 extends GA {

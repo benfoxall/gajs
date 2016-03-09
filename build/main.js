@@ -109,6 +109,21 @@ var GA = function () {
         return x.fitness == m;
       })[0];
     }
+  }, {
+    key: "worst",
+    value: function worst() {
+      return Math.min.apply(Math, this.population.map(function (x) {
+        return x.fitness;
+      }));
+    }
+  }, {
+    key: "worstE",
+    value: function worstE() {
+      var m = this.worst();
+      return this.population.filter(function (x) {
+        return x.fitness == m;
+      })[0];
+    }
   }]);
   return GA;
 }();
@@ -247,4 +262,9 @@ var inter = setInterval(ct.tick.bind(ct), 1);
 setTimeout(function () {
   clearInterval(inter);
   console.log(count);
-}, 15000);
+
+  setTimeout(render, 1000, ct.worstE().entity);
+  setTimeout(render, 2000, ct.bestE().entity);
+  setTimeout(render, 3000, ct.worstE().entity);
+  setTimeout(render, 4000, ct.bestE().entity);
+}, 10000);
