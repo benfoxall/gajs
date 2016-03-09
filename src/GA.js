@@ -9,14 +9,14 @@ export default class GA {
   tick() {
     let entity
 
-    if(this.population.length < 100) {
+    if(this.population.length < 250) {
       entity = this.generate()
     } else {
       entity = this.cross(this.select(),this.select())
       this.population.shift()
     }
 
-    if(Math.random() > 0.98) {
+    if(Math.random() > 0.8) {
       this.mutate(entity)
     }
 
@@ -25,9 +25,14 @@ export default class GA {
   }
 
   select() {
-    // Tournament 2
-    const [a,b] = [this._rndInst(),this._rndInst()]
-    return a.fitness > b.fitness ? a.entity : b.entity
+    // Tournament 3
+    return [
+      this._rndInst(), this._rndInst(), this._rndInst()
+    ]
+    .reduce( (memo, inst) => {
+      return (memo && memo.fitness > inst.fitness) ? memo : inst
+    })
+    .entity
   }
 
   _rndInst() {
@@ -60,7 +65,7 @@ export class GAUint8 extends GA {
   cross(mother, father) {
     const len = this.size
 
-    // 2 point cross
+    // 2 point cross (not binary)
     let a = this._rnd()
     let b = this._rnd()
     if (a > b) [a, b] = [b, a]
@@ -75,6 +80,9 @@ export class GAUint8 extends GA {
   mutate(entity) {
     const at = this._rnd()
     entity[at] ^= (1 << Math.random() * 8)
+
+    entity[at] += (Math.random() * 50) - 25
+    entity[at] = (Math.random() * 255)
   }
 
   _rnd() {
@@ -82,23 +90,3 @@ export class GAUint8 extends GA {
   }
 
 }
-
-class T extends GAUint8 {
-  constructor() {
-    super(21)
-  }
-
-  assess(entity) {
-    return entity.reduce((a, b) => a + b, 0) / (254 * 100)
-  }
-}
-
-
-const test = new T()
-
-for(let i = 0; i < 1000; i++) {
-  test.tick()
-  console.log(test.best())
-}
-
-console.log(test.bestE())
