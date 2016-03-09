@@ -175,13 +175,52 @@ var size = 300;
 // create template canvas
 var canvas = document.createElement('canvas');
 canvas.width = canvas.height = size;
-// canvas.style.border = '1px solid blue'
 document.body.appendChild(canvas);
 
 var ctx = canvas.getContext('2d');
 ctx.textBaseline = 'middle';
 ctx.textAlign = 'center';
 ctx.font = '300px Helvetica';
+
+var render = function render(entity) {
+
+  ctx.fillStyle = 'rgba(0,0,255,0.5)';
+  ctx.clearRect(0, 0, size, size);
+  ctx.fillText('A', size / 2, size / 2);
+
+  ctx.fillStyle = 'rgba(255,0,0,0.5)';
+
+  ctx.beginPath();
+  for (var i = 0; i < entity.length; i += 3) {
+
+    var x = entity[i] / 255 * size;
+    var y = entity[i + 1] / 255 * size;
+    var r = entity[i + 2] / 9;
+
+    ctx.moveTo(x, y);
+    ctx.ellipse(x, y, r, r, 0, 0, Math.PI * 2);
+  }
+  ctx.fill();
+};
+
+var _assess = function _assess(entity) {
+  render(entity);
+
+  var image = ctx.getImageData(0, 0, size, size);
+
+  var correct = 0;
+  for (var i = 0; i < image.data.length; i += 4) {
+    if (
+    // white, good
+    image.data[i + 3] == 0 ||
+    // red + blue, good
+    image.data[i] && image.data[i + 2]) {
+      correct++;
+    }
+  }
+
+  return correct * 4 / image.data.length;
+};
 
 var count = 0;
 
@@ -196,40 +235,8 @@ var circleText = function (_GAUint) {
   babelHelpers.createClass(circleText, [{
     key: 'assess',
     value: function assess(entity) {
-      ctx.fillStyle = 'rgba(0,0,255,0.5)';
-      ctx.clearRect(0, 0, size, size);
-      ctx.fillText('A', size / 2, size / 2);
-
-      ctx.fillStyle = 'rgba(255,0,0,0.5)';
-
-      ctx.beginPath();
-      for (var i = 0; i < entity.length; i += 3) {
-
-        var x = entity[i] / 255 * size;
-        var y = entity[i + 1] / 255 * size;
-        var r = entity[i + 2] / 9;
-
-        ctx.moveTo(x, y);
-        ctx.ellipse(x, y, r, r, 0, 0, Math.PI * 2);
-      }
-      ctx.fill();
-
-      var image = ctx.getImageData(0, 0, size, size);
-
-      var correct = 0;
-      for (var _i = 0; _i < image.data.length; _i += 4) {
-        if (
-        // white, good
-        image.data[_i + 3] == 0 ||
-        // red + blue, good
-        image.data[_i] && image.data[_i + 2]) {
-          correct++;
-        }
-      }
-
       count++;
-
-      return correct * 4 / image.data.length;
+      return _assess(entity);
     }
   }]);
   return circleText;
@@ -237,4 +244,7 @@ var circleText = function (_GAUint) {
 
 var ct = new circleText();
 var inter = setInterval(ct.tick.bind(ct), 1);
-setTimeout(clearInterval.bind(window, inter), 5000);
+setTimeout(function () {
+  clearInterval(inter);
+  console.log(count);
+}, 15000);
